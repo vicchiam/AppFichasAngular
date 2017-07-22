@@ -1,26 +1,32 @@
-<div id="content" class="container-fluid p-0" style="background:green">
-    <nav *ngIf="login" id="nav" class="navbar navbar-inverse navbar-static-top m-0">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="#">{{title}}</a>
-            </div>
-            <ul class="nav navbar-nav">
-                <li><a href="#">Fichas</a></li>
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Utilidades<span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Usuarios</a></li>
-                        <li><a href="#">Marcas</a></li>
-                        <li><a href="#">Unidades</a></li>
-                    </ul>
+<div id="content" class="container-fluid p-0 ">
+    <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse">
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="navbar-brand" href="#">
+            <img src="/assets/images/logo.jpg" width="40" height="40" alt="">
+            {{title}}
+        </a>
+        <div *ngIf="login" class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Fichas <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Utilidades
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <a class="dropdown-item" href="/users">Usuarios</a>
+                        <a class="dropdown-item" href="#">Marcas</a>
+                        <a class="dropdown-item" href="#">Idiomas</a>
+                    </div>
                 </li>
             </ul>
-            <button class="btn btn-danger navbar-btn navbar-right">Salir</button>
+            <button (click)="logout()" class="btn btn-danger">Salir</button>
         </div>
     </nav>
-
     <section id="main" class="container">
-		<router-outlet></router-outlet>
-	</section>
-
+        <router-outlet></router-outlet>
+    </section>
 </div>

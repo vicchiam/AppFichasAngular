@@ -1,0 +1,38 @@
+<div class="container">
+    <form id="form_filter" #formLFilter="ngForm" (ngSubmit)="list()"></form>
+    <table class="table table-hover mt-5 min-width-500">
+        <thead>
+            <tr>
+                <th>
+                    <input type="text" name="f_user" [(ngModel)]="f_user" class="form-control" form="form_filter" />
+                </th>
+                <th>
+                    <input type="text" name="f_mail" [(ngModel)]="f_mail" class="form-control" form="form_filter" />
+                </th>
+                <th>
+                    <select class="form-control" form="form_filter" [(ngModel)]="f_type">
+                        <option value="">*</option>
+                        <option *ngFor="let typeName of getTypeNames(); let i=index" value="{{i+1}}">{{typeName}}</option>
+                    </select>
+                </th>
+                <th class="text-right">
+                    <button type="submit" class="btn btn-primary" form="form_filter">Buscar</button>
+                </th>
+            </tr>
+            <tr class="text-white bg-primary">
+                <th>Usuario</th>
+                <th>Mail</th>
+                <th>Tipo</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let user of users">
+                <td>{{user.user}}</td>
+                <td>{{user.mail}}</td>
+                <td>{{getTypeName(user.type)}}</td>
+                <td class="text-right"><button class="btn btn-primary">Editar</button><button class="btn btn-danger ml-2">Eliminar</button></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
