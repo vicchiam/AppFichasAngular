@@ -10,7 +10,7 @@ import { UserService } from './services/user.services';
     providers: [UserService]
 })
 export class AppComponent {
-  public title = 'Fichas técnicas PCS';
+  public title = 'Fichas clientes';
   public login:boolean;
 
 

@@ -12,12 +12,15 @@ import { HomeComponent } from './components/home.component';
 import { LoginComponent } from './components/login.component';
 import { ListUsersComponent } from './components/listUsers.component';
 
+import { Autocomplete } from './components/autocomplete.component';
+
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     LoginComponent,
-    ListUsersComponent
+    ListUsersComponent,
+    Autocomplete
   ],
   imports: [
     BrowserModule,

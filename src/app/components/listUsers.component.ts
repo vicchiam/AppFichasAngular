@@ -4,6 +4,7 @@ import { UserService } from '../services/user.services';
 import { GLOBAL } from '../services/global';
 
 import { User } from '../models/user';
+import { Autocomplete } from './autocomplete.component';
 
 @Component({
   selector: 'list-users',
