@@ -1,6 +1,6 @@
 <div class="suggestions_parent" >
     <div class="">
-        <input id="country" type="text" class="validate filter-input form-control" [(ngModel)]=query (keyup)=filter()>
+        <input id="country" type="text" class="validate filter-input form-control" [(ngModel)]="query" (keyup)="filter()" (blur)="blur()">
     </div>
     <div class="suggestions" *ngIf="filteredList.length > 0">
         <ul *ngFor="let item of filteredList" >

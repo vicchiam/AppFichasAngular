@@ -25,8 +25,24 @@ export class UserService{
         localStorage.removeItem('currentUser');
     }
 
-    listUsers(){
-        return this._http.get(this.url+"/list").map(res=>res.json());
+    listUsers(user,mail,type,state){
+        let headers = new Headers({'Content-Type':'application/x-www-form-urlencoded'});
+        let post="user="+user+"&mail="+mail+"&type="+type+"&state="+state;
+        return this._http.post(this.url+"/list",post,{headers: headers}).map(res=>res.json());
+    }
+
+    getAutocompleteData(state){
+        return this._http.get(this.url+"/list/autocomplete/"+state).map(res=>res.json());
+    }
+
+    getUser(id){
+        return this._http.get(this.url+"/get/"+id).map(res=>res.json());
+    }
+
+    saveUser(user){
+        let headers = new Headers({'Content-Type':'application/x-www-form-urlencoded'});
+        let post="id="+user.id+"&user="+user.user+"&mail="+user.mail+"&type="+user.type;
+        return this._http.post(this.url+"/save",post,{headers: headers}).map(res=>res);
     }
 
 }

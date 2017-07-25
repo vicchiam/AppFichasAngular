@@ -2,6 +2,7 @@ body{
     background-color: blue;
 }
 
+/*******SIZE********************/
 .min-height-500{
     min-height: 500px;
 }
@@ -14,8 +15,13 @@ body{
 .min-width-500{
     min-width: 500px;
 }
+.max-width-500{
+    max-width: 500px;
+}
 
-.window-login{
+/********************************/
+
+.window-border{
     border-radius: 0.2rem;
     box-shadow: 1px 2px 4px #888888;
 }
@@ -23,6 +29,27 @@ body{
 .text-white{
     color: white;
 }
+
+.img-button{
+    width: 24px;
+}
+
+.font-size-24{
+    font-size: 24px;
+}
+
+.border-pager-top{
+    border-top: 1px solid #ccc;
+}
+
+.pagination a{
+    cursor: pointer;
+}
+
+.outline-none{
+    outline: none;
+}
+/******SUGGESTION********************/
 
 .suggestions_parent{
     position: relative;

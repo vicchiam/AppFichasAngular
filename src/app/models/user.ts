@@ -3,8 +3,8 @@ export class User{
         public id:number,
         public user:string,
         public pass:string,
-        public email:string,
+        public mail:string,
         public type:number,
         public state:number
-    ){}    
+    ){}
 }

@@ -1,4 +1,4 @@
-import { Component, ElementRef } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
     selector: 'autocomplete',
@@ -10,14 +10,10 @@ import { Component, ElementRef } from '@angular/core';
 export class Autocomplete{
 
     public query = '';
-    public countries = [ "Albania","Andorra","Armenia","Austria","Azerbaijan","Belarus",
-                        "Belgium","Bosnia &amp; Herzegovina","Bulgaria","Croatia","Cyprus",
-                        "Czech Republic","Denmark","Estonia","Finland","France","Georgia",
-                        "Germany","Greece","Hungary","Iceland","Ireland","Italy","Kosovo",
-                        "Latvia","Liechtenstein","Lithuania","Luxembourg","Macedonia","Malta",
-                        "Moldova","Monaco","Montenegro","Netherlands","Norway","Poland",
-                        "Portugal","Romania","Russia","San Marino","Serbia","Slovakia","Slovenia",
-                        "Spain","Sweden","Switzerland","Turkey","Ukraine","United Kingdom","Vatican City"];
+
+    @Input() data:Array<any>;
+    @Output() shareSelected = new EventEmitter();
+
     public filteredList = [];
     public elementRef;
 
@@ -27,18 +23,24 @@ export class Autocomplete{
 
     filter() {
         if (this.query !== ""){
-            this.filteredList = this.countries.filter(function(el){
+            this.filteredList = this.data.filter(function(el){
                 return (el.toLowerCase().substr(0,this.query.length) === this.query.toLowerCase()) == true;
             }.bind(this));
         }else{
             this.filteredList = [];
         }
-        console.log("Filtered list"+this.filteredList );
+        //console.log("Filtered list"+this.filteredList );
     }
 
     select(item){
         this.query = item;
         this.filteredList = [];
+        this.getSelected();
+    }
+
+    blur(){
+        console.log(this.query);
+        this.getSelected();
     }
 
     handleClick(event){
@@ -54,4 +56,9 @@ export class Autocomplete{
             this.filteredList = [];
         }
     }
+
+    getSelected(){
+        this.shareSelected.emit({selected: this.query});
+    }
+
 }

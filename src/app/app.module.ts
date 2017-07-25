@@ -11,6 +11,7 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './components/home.component';
 import { LoginComponent } from './components/login.component';
 import { ListUsersComponent } from './components/listUsers.component';
+import { EditUserComponent } from './components/editUser.component';
 
 import { Autocomplete } from './components/autocomplete.component';
 
@@ -20,6 +21,7 @@ import { Autocomplete } from './components/autocomplete.component';
     HomeComponent,
     LoginComponent,
     ListUsersComponent,
+    EditUserComponent,
     Autocomplete
   ],
   imports: [

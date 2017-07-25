@@ -4,37 +4,119 @@
         <thead>
             <tr>
                 <th>
-                    <!-- <input type="text" name="f_user" [(ngModel)]="f_user" class="form-control" form="form_filter" /> -->
-                    <autocomplete></autocomplete>
+                    <autocomplete [data]="userNames" (shareSelected)="setFilterUser($event)"></autocomplete>
                 </th>
                 <th>
-                    <!-- <input type="text" name="f_mail" [(ngModel)]="f_mail" class="form-control" form="form_filter" /> -->
-                    <autocomplete></autocomplete>
+                    <autocomplete [data]="userMails" (shareSelected)="setFilterMail($event)"></autocomplete>
                 </th>
                 <th>
-                    <select class="form-control" form="form_filter" [(ngModel)]="f_type">
-                        <option value="">*</option>
+                    <select class="form-control custom-select" form="form_filter" [(ngModel)]="f_type">
+                        <option value="0" selected>*</option>
                         <option *ngFor="let typeName of getTypeNames(); let i=index" value="{{i+1}}">{{typeName}}</option>
                     </select>
                 </th>
                 <th class="text-right">
-                    <button type="submit" class="btn btn-primary" form="form_filter">Buscar</button>
+                    <label class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" [(ngModel)]="f_state" (change)="setChangeState()">
+                        <span class="custom-control-indicator"></span>
+                        <span class="custom-control-description">Ver Pasivos</span>
+                    </label>
+                </th>
+                <th class="text-right">
+                    <button type="submit" class="btn btn-primary" form="form_filter">
+                        <img src="/assets/images/search.svg" class="img-button" alt="Buscar"/>
+                    </button>
                 </th>
             </tr>
-            <tr class="text-white bg-primary">
+            <tr class="text-white bg-info font-size-24">
                 <th>Usuario</th>
                 <th>Mail</th>
                 <th>Tipo</th>
                 <th></th>
+                <th class="text-right">
+                    <button class="btn btn-success ml-2" (click)="getUser()">
+                        <img src="/assets/images/add.svg" class="img-button" alt="Añadir Usuario"/>
+                    </button>
+                </th>
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let user of users">
+            <tr *ngFor="let user of pagedItems">
                 <td>{{user.user}}</td>
                 <td>{{user.mail}}</td>
                 <td>{{getTypeName(user.type)}}</td>
-                <td class="text-right"><button class="btn btn-primary">Editar</button><button class="btn btn-danger ml-2">Eliminar</button></td>
+                <td class="text-right">
+                    <button class="btn btn-outline-primary" title="Cambiar contraseña">
+                        <img src="/assets/images/password.svg" class="img-button" alt="Cambio de contraseña"/>
+                    </button>
+                </td>
+                <td class="text-right">
+                    <button class="btn btn-primary" title="Editar usuario" (click)="getUser(user)">
+                        <img src="/assets/images/edit.svg" class="img-button" alt="Editar"/>
+                    </button>
+                    <button class="btn btn-warning ml-2" title="Modificar estado">
+                        <img src="/assets/images/renew.svg" class="img-button" alt="Modificar Estado"/>
+                    </button>
+                </td>
             </tr>
         </tbody>
     </table>
+    <nav class="pt-3 border-pager-top">
+        <ul *ngIf="pager.pages && pager.pages.length>1" class="pagination justify-content-center">
+            <li [ngClass]="{disabled:pager.currentPage === 1}" class="page-item">
+                <a (click)="setPage(1)" class="page-link">Primera</a>
+            </li>
+            <li [ngClass]="{disabled:pager.currentPage === 1}" class="page-item">
+                <a (click)="setPage(pager.currentPage - 1)" class="page-link">Anterior</a>
+            </li>
+            <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}" class="page-item">
+                <a (click)="setPage(page)" class="page-link">{{page}}</a>
+            </li>
+            <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}" class="page-item">
+                <a (click)="setPage(pager.currentPage + 1)" class="page-link">Siguiente</a>
+            </li>
+            <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}" class="page-item">
+                <a (click)="setPage(pager.totalPages)" class="page-link">Última</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="modalUser" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="modalUser">Gestión de usuarios:</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="reset(formUser)">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <form #formUser="ngForm" id="form-user" (submit)="saveUser()">
+              <div class="form-group">
+                  <label for="user">Nombre de Usuario:</label>
+                  <input type="text" class="form-control" id="user" name="user" #user1="ngModel" [(ngModel)]="editUser.user" placeholder="Indica un nombre de usuario" required />
+                  <div *ngIf="!user1.valid && user1.touched" class="alert alert-danger mt-3" role="alert">Debes indicar un nombre de usuario</div>
+              </div>
+              <div class="form-group">
+                  <label for="mail">Mail:</label>
+                  <input type="text" class="form-control" id="mail" name="mail" #mail1="ngModel" [(ngModel)]="editUser.mail" placeholder="Indica un correo electrónico" required
+                      pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$"/>
+                  <div *ngIf="!mail1.valid && mail1.touched" class="alert alert-danger mt-3" role="alert">Debes indicar un correo electrónico</div>
+                  <div *ngIf="mail1.errors && mail1.errors.pattern" class="alert alert-danger mt-3" role="alert">Formato del correo inválido</div>
+              </div>
+              <div class="form-group">
+                  <label for="type">Tipo:</label>
+                  <select name="type" class="form-control custom-select outline-none" [(ngModel)]="editUser.type">
+                      <option *ngFor="let typeName of getTypeNames(); let i=index" value="{{i+1}}" >{{typeName}}</option>
+                  </select>
+              </div>
+          </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="reset(formUser)">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="!formUser.form.valid" form="form-user" >Guardar cambios</button>
+      </div>
+    </div>
+  </div>
 </div>
