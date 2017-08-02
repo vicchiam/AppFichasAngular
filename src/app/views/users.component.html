@@ -17,7 +17,7 @@
                 </th>
                 <th class="text-right">
                     <label class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" [(ngModel)]="f_state" (change)="setChangeState()">
+                        <input type="checkbox" class="custom-control-input" [(ngModel)]="f_state" (change)="setChangeFilterState()">
                         <span class="custom-control-indicator"></span>
                         <span class="custom-control-description">Ver Pasivos</span>
                     </label>
@@ -46,7 +46,7 @@
                 <td>{{user.mail}}</td>
                 <td>{{getTypeName(user.type)}}</td>
                 <td class="text-right">
-                    <button class="btn btn-outline-primary" title="Cambiar contraseña">
+                    <button class="btn btn-outline-primary" title="Cambiar contraseña" (click)="changePass(user)">
                         <img src="/assets/images/password.svg" class="img-button" alt="Cambio de contraseña"/>
                     </button>
                 </td>
@@ -54,7 +54,7 @@
                     <button class="btn btn-primary" title="Editar usuario" (click)="getUser(user)">
                         <img src="/assets/images/edit.svg" class="img-button" alt="Editar"/>
                     </button>
-                    <button class="btn btn-warning ml-2" title="Modificar estado">
+                    <button class="btn btn-warning ml-2" title="Modificar estado" (click)="showChangeState(user)">
                         <img src="/assets/images/renew.svg" class="img-button" alt="Modificar Estado"/>
                     </button>
                 </td>
@@ -82,11 +82,11 @@
     </nav>
 </div>
 <!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="modalUser" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+<div class="modal fade" id="modalUser" tabindex="-1" role="dialog" aria-labelledby="modalUser" aria-hidden="true" data-keyboard="false" data-backdrop="static">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title" id="modalUser">Gestión de usuarios:</h4>
+        <h4 class="modal-title" id="modalUser">Gestión de usuarios</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="reset(formUser)">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -116,6 +116,58 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="reset(formUser)">Cancelar</button>
         <button type="submit" class="btn btn-primary" [disabled]="!formUser.form.valid" form="form-user" >Guardar cambios</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalPassUser" tabindex="-1" role="dialog" aria-labelledby="modalPass" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="modalPass">Modificar contraseña</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="reset(formPass)">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <form #formPass="ngForm" id="form-pass" (submit)="savePass()">
+              <div class="form-group">
+                  <label for="pass">Contraseña:</label>
+                  <input type="password" class="form-control" id="pass" name="pass" #pass1="ngModel" [(ngModel)]="pass" placeholder="Escribe la nueva contraseña" required />
+                  <div *ngIf="!pass1.valid && pass1.touched" class="alert alert-danger mt-3" role="alert">Debes indicar un nombre de usuario</div>
+              </div>
+              <div class="form-group">
+                  <label for="mail">Repite la contraseña:</label>
+                  <input type="password" class="form-control" id="passR" name="passR" #passR1="ngModel" [(ngModel)]="passR" placeholder="Repite la contraseña" required />
+                  <div *ngIf="!passR1.valid && passR1.touched" class="alert alert-danger mt-3" role="alert">Debes volver a escribir la contraseña</div>
+                  <div *ngIf="pass1.value!=passR1.value && passR1.touched" class="alert alert-danger mt-3" role="alert">La contraseña no coincide</div>
+              </div>
+          </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="reset(formPass)">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="!formPass.form.valid || pass1.value!=passR1.value" form="form-pass" >Guardar cambios</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalStateUser" tabindex="-1" role="dialog" aria-labelledby="modalState" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="modalState">Modificar estado</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <div  class="alert alert-warning mt-3" role="alert">¿Seguro que deseas modificar el estado del usuario?</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" form="form-pass" (click)="saveState()">Modificar estado</button>
       </div>
     </div>
   </div>

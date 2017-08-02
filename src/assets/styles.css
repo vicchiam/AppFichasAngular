@@ -82,3 +82,20 @@ body{
 .suggestions li:hover{
     background-color: #ccc;
 }
+
+/***********LANG******************************/
+.custom-file-control:lang(en)::after {
+  content: "Select file...";
+}
+
+.custom-file-control:lang(en)::before {
+  content: "Click me";
+}
+
+.custom-file-control:lang(es)::after {
+  content: "Elige una imagen...";
+}
+
+.custom-file-control:lang(es)::before {
+  content: "Haz click";
+}

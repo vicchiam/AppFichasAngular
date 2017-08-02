@@ -1,0 +1,133 @@
+<div class="container">
+    <form id="form_filter" #formLFilter="ngForm" (ngSubmit)="list()"></form>
+    <table class="table  mt-5 min-width-500">
+        <thead>
+            <tr>
+                <th>
+                    <autocomplete [data]="trademarkNames" (shareSelected)="setFilterName($event)"></autocomplete>
+                </th>
+                <th class="text-right">
+                    <label class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" [(ngModel)]="f_state" (change)="setChangeFilterState()">
+                        <span class="custom-control-indicator"></span>
+                        <span class="custom-control-description">Ver Pasivos</span>
+                    </label>
+                </th>
+                <th class="text-right">
+                    <button type="submit" class="btn btn-primary" form="form_filter">
+                        <img src="/assets/images/search.svg" class="img-button" alt="Buscar"/>
+                    </button>
+                </th>
+            </tr>
+            <tr class="text-white bg-info font-size-24">
+                <th>Marcas</th>
+                <th></th>
+                <th class="text-right">
+                    <button class="btn btn-success ml-2" (click)="getTrademark()">
+                        <img src="/assets/images/add.svg" class="img-button" alt="Añadir Marca"/>
+                    </button>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td colspan="3">
+                    <div class="row">
+                        <div class="col-3" *ngFor="let trademark of pagedItems">
+                            <div class="thumbnail window-border p-4">
+                                <div >
+                                    <img *ngIf="trademark.path" src="{{imagePath}}{{trademark.path}}" alt="Imagen marca" style="max-width:100%"/>
+                                    <img *ngIf="!trademark.path" src="/assets/images/no_image.png" alt="Sin imagen marca" style="width:100%"/>
+				                </div>
+                                <div class="caption">
+                                    <h3>{{trademark.name}}</h3>
+                                    <div class="botones">
+                                        <button class="btn btn-primary" title="Editar marca" (click)="getTrademark(trademark)">
+                                            <img src="/assets/images/edit.svg" class="img-button" alt="Editar"/>
+                                        </button>
+                                        <button class="btn btn-warning ml-2" title="Modificar estado" (click)="showChangeState(trademark)">
+                                            <img src="/assets/images/renew.svg" class="img-button" alt="Modificar Estado"/>
+                                        </button>
+                					</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <nav class="pt-3 border-pager-top">
+        <ul *ngIf="pager.pages && pager.pages.length>1" class="pagination justify-content-center">
+            <li [ngClass]="{disabled:pager.currentPage === 1}" class="page-item">
+                <a (click)="setPage(1)" class="page-link">Primera</a>
+            </li>
+            <li [ngClass]="{disabled:pager.currentPage === 1}" class="page-item">
+                <a (click)="setPage(pager.currentPage - 1)" class="page-link">Anterior</a>
+            </li>
+            <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}" class="page-item">
+                <a (click)="setPage(page)" class="page-link">{{page}}</a>
+            </li>
+            <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}" class="page-item">
+                <a (click)="setPage(pager.currentPage + 1)" class="page-link">Siguiente</a>
+            </li>
+            <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}" class="page-item">
+                <a (click)="setPage(pager.totalPages)" class="page-link">Última</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<div class="modal fade" id="modalTrademark" tabindex="-1" role="dialog" aria-labelledby="modalTrademark" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="modalTrademark">Gestión Marca</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="reset(formPass)">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <form #formTrademark="ngForm" id="form-trademark" (submit)="saveTrademark()">
+              <div class="form-group">
+                  <label for="name">Nombre:</label>
+                  <input type="text" class="form-control" id="name" name="name" #name1="ngModel" [(ngModel)]="editTrademark.name" placeholder="Nombre de la marca" required />
+                  <div *ngIf="!name1.valid && name1.touched" class="alert alert-danger mt-3" role="alert">Debes indicar un nombre</div>
+              </div>
+              <div class="form-group" *ngIf="editTrademark.id>0">
+                  <label for="file">Imagen:</label>
+                  <div class="text-center m-2">
+                      <img id="img_file" *ngIf="editTrademark.path" src="{{imagePath}}{{editTrademark.path}}" alt="Imagen de marca" style="width:200px"/>
+                      <img *ngIf="!editTrademark.path" src="/assets/images/no_image.png" alt="Añadir Usuario" style="width:200px"/>
+                  </div>
+                  <input type="file" id="file" accept="image/*" class="form-control" (change)="fileChangeEvent($event)">
+              </div>
+          </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="reset(formTrademark)">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="!formTrademark.form.valid" form="form-trademark" >Guardar cambios</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalStateTrademark" tabindex="-1" role="dialog" aria-labelledby="modalState" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="modalState">Modificar estado</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <div  class="alert alert-warning mt-3" role="alert">¿Seguro que deseas modificar el estado de la marca?</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" form="form-pass" (click)="saveState()">Modificar estado</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -45,4 +45,16 @@ export class UserService{
         return this._http.post(this.url+"/save",post,{headers: headers}).map(res=>res);
     }
 
+    savePass(id,pass){
+        let headers = new Headers({'Content-Type':'application/x-www-form-urlencoded'});
+        let post="id="+id+"&pass="+pass;
+        return this._http.post(this.url+"/changePass",post,{headers: headers}).map(res=>res);
+    }
+
+    saveState(id){
+        let headers = new Headers({'Content-Type':'application/x-www-form-urlencoded'});
+        let post="id="+id;
+        return this._http.post(this.url+"/changeState",post,{headers: headers}).map(res=>res);
+    }
+
 }

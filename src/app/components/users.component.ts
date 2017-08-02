@@ -1,5 +1,4 @@
 import { Component} from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { UserService } from '../services/user.services';
 import { GLOBAL } from '../services/global';
@@ -13,17 +12,17 @@ declare var $:any;
 
 @Component({
   selector: 'list-users',
-  templateUrl: '../views/listUsers.component.html',
+  templateUrl: '../views/users.component.html',
   providers: [UserService, PagerService]
 })
-export class ListUsersComponent{
+export class UsersComponent{
     public title="Hola";
 
     public f_user:string;
     public f_mail:string;
     public f_type:number;
     public f_state:boolean;
-    public changeState:boolean;//Modificamos el tick Ver Pasivos
+    public changeFilterState:boolean;//Modificamos el tick Ver Pasivos
 
     public users:Array<User>;
 
@@ -36,6 +35,9 @@ export class ListUsersComponent{
     //Form variables
     public editUser:User;
 
+    public pass:string;
+    public passr:string;
+
     constructor(
         public _userService:UserService,
         public _pagerService: PagerService
@@ -46,7 +48,7 @@ export class ListUsersComponent{
         this.f_mail="";
         this.f_type=0;
         this.f_state=false;
-        this.changeState=true;
+        this.changeFilterState=true;
 
         this.pager={};
         this.pagedItems=[];
@@ -56,7 +58,7 @@ export class ListUsersComponent{
 
     ngOnInit(){
         this.getAutocompleteData();
-        this.getUsers();
+        this.list();
     }
 
     getTypeNames(){
@@ -67,7 +69,7 @@ export class ListUsersComponent{
         return GLOBAL.typeNames[type-1];
     }
 
-    getUsers(){
+    list(){
         this._userService.listUsers(this.f_user, this.f_mail, this.f_type, ((this.f_state)?0:1)).subscribe(
             response =>{
                 this.users=[];
@@ -90,7 +92,7 @@ export class ListUsersComponent{
     }
 
     getAutocompleteData(){
-        if(this.changeState){
+        if(this.changeFilterState){
             this._userService.getAutocompleteData(((this.f_state)?0:1)).subscribe(
                 response => {
                     this.userNames=[];
@@ -99,7 +101,7 @@ export class ListUsersComponent{
                         this.userNames.push(response.user[i].user);
                         this.userMails.push(response.user[i].mail);
                     }
-                    this.changeState=false;
+                    this.changeFilterState=false;
                 },
                 error =>{
                     console.log(error);
@@ -108,13 +110,8 @@ export class ListUsersComponent{
         }
     }
 
-    list(){
-        this.getUsers();
-        console.log(this.f_user+" "+this.f_mail+" "+this.f_type+" "+this.f_state);
-    }
-
     setPage(page: number) {
-        if (page < 1 || page > this.pager.totalPages) {
+        if (page < 1 || (page > 1 && page > this.pager.totalPages)) {
             return;
         }
         this.pager = this._pagerService.getPager(this.users.length, page,10);
@@ -129,8 +126,8 @@ export class ListUsersComponent{
         this.f_mail=event.selected;
     }
 
-    setChangeState(){
-        this.changeState=true;
+    setChangeFilterState(){
+        this.changeFilterState=true;
     }
 
     /**********************USER************************************************/
@@ -141,7 +138,7 @@ export class ListUsersComponent{
         else{
             this.editUser=new User(0,"","","",3,1);
         }
-        $('#myModal').modal('show');
+        $('#modalUser').modal('show');
     }
 
     saveUser(){
@@ -149,8 +146,12 @@ export class ListUsersComponent{
             response => {
                 if(response.text()=="ok"){
                     alert("Guardado correctamente");
-                    $('#myModal').modal('hide');
+                    $('#modalUser').modal('hide');
                     this.list();
+                }
+                else{
+                    alert("No se ha podido modificar");
+                    console.log(response);
                 }
             },
             error => {
@@ -161,6 +162,55 @@ export class ListUsersComponent{
 
     reset(e){
         e.form.reset();
+    }
+
+    /*******************PASS***************************************************/
+    changePass(user){
+        this.editUser=new User(user.id, user.user ,user.pass ,user.mail, user.type, user.state);
+        $('#modalPassUser').modal('show');
+    }
+
+    savePass(){
+        this._userService.savePass(this.editUser.id,this.pass).subscribe(
+            response =>{
+                if(response.text()=="ok"){
+                    alert("Modificado correctamente");
+                    $('#modalPassUser').modal('hide');
+                }
+                else{
+                    alert("No se ha podido modificar");
+                    console.log(response);
+                }
+            },
+            error => {
+                console.log(error);
+            }
+        );
+    }
+
+    /*************STATE********************************************************/
+    showChangeState(user){
+        this.editUser=user;
+        $('#modalStateUser').modal('show');
+    }
+
+    saveState(){
+        this._userService.saveState(this.editUser.id).subscribe(
+            response => {
+                if(response.text()=="ok"){
+                    alert("Modificado correctamente");
+                    $('#modalStateUser').modal('hide');
+                    this.list();
+                }
+                else{
+                    alert("No se ha podido modificar");
+                    console.log(response);
+                }
+            },
+            error => {
+                console.log("Error");
+            }
+        );
     }
 
 }
